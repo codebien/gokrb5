@@ -14,11 +14,11 @@ func MyCrossDomainPatch() {
 
 // TGSREQGenerateAndExchange generates the TGS_REQ and performs a TGS exchange to retrieve a ticket to the specified SPN.
 func (cl *Client) TGSREQGenerateAndExchange(spn types.PrincipalName, kdcRealm string, tgt messages.Ticket, sessionKey types.EncryptionKey, renewal bool) (tgsReq messages.TGSReq, tgsRep messages.TGSRep, err error) {
-	tgsReq, err = messages.NewTGSReq(cl.Credentials.CName(), kdcRealm, kdcRealm, cl.Config, tgt, sessionKey, spn, renewal)
+	tgsReq, err = messages.NewTGSReq(cl.Credentials.CName(), cl.Credentials.Domain(), kdcRealm, cl.Config, tgt, sessionKey, spn, renewal)
 	if err != nil {
 		return tgsReq, tgsRep, krberror.Errorf(err, krberror.KRBMsgError, "TGS Exchange Error: failed to generate a new TGS_REQ")
 	}
-	return cl.TGSExchange(tgsReq, kdcRealm, kdcRealm, tgsRep.Ticket, sessionKey, 0)
+	return cl.TGSExchange(tgsReq, cl.Credentials.Domain(), kdcRealm, tgsRep.Ticket, sessionKey, 0)
 }
 
 // TGSExchange exchanges the provided TGS_REQ with the KDC to retrieve a TGS_REP.
